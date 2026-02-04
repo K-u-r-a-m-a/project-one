@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/data/notifiers.dart';
+import 'package:flutter_application_1/main.dart';
 import 'package:flutter_application_1/views/pages/about_page.dart';
 import 'package:flutter_application_1/views/pages/home_page.dart';
 import 'package:flutter_application_1/views/pages/login_page.dart';
@@ -76,7 +77,8 @@ class WidgetTree extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.logout),
                 title: Text('Logout'),
-                onTap: () {
+                onTap: () async {
+                  await supabase.auth.signOut();
                   Navigator.pop(context);
                   Navigator.push(
                     context,

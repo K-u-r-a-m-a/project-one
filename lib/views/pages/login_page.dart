@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/main.dart';
+import 'package:flutter_application_1/views/pages/register_page.dart';
 import 'package:flutter_application_1/widgets/hero_widget.dart';
 import 'package:flutter_application_1/widgets/widget_tree.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -11,10 +14,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController controlleruser = TextEditingController();
-  TextEditingController controllerpass = TextEditingController();
-  String username = 'admin';
-  String password = 'admin';
+  final controlleruser = TextEditingController();
+  final controllerpass = TextEditingController();
+
 
 
   @override
@@ -67,6 +69,15 @@ class _LoginPageState extends State<LoginPage> {
                         child: Text('Login'),
                       ),
                     ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => RegisterPage()),
+                        );
+                      },
+                      child: Text('Don\'t have an account? Register'),
+                    )
                   ],
                 ),
               ),
@@ -77,13 +88,38 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void loginPressed() {
-    if (controlleruser.text == username && controllerpass.text == password) {
+  void loginPressed() async{
+    try {
+      await supabase.auth.signInWithPassword(
+        email: controlleruser.text,
+        password: controllerpass.text,
+      );
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => WidgetTree()),
       );
-    } else {
+    } 
+    on AuthException catch (error) {
+      showDialog(
+        
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(error.message),
+            content: Text(error.toString()),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+    catch (error) {
       showDialog(
         context: context,
         builder: (context) {
